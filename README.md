@@ -60,7 +60,7 @@
 
 📎 [Посилання на проєкт](https://github.com/rronik3/Practice_OOP/tree/main/src/ex3)
 
-Результат 
+**Результат**
 
 ![](https://github.com/rronik3/Practice_OOP/blob/main/img/main_ex3.png)
 
