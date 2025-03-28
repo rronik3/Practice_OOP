@@ -78,9 +78,13 @@
 
 📎 [Посилання на проєкт](https://github.com/rronik3/Practice_OOP/tree/main/src/ex4)
 
-**Результат**
+**Результат Main**
 
 ![](https://github.com/rronik3/Practice_OOP/blob/main/img/Main_ex4.png)
+
+**Результат MainTest**
+
+![](https://github.com/rronik3/Practice_OOP/blob/main/img/Test_ex4.png)
 
 ### 📌 Завдання 5 (28.03.25)
 
