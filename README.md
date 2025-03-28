@@ -76,11 +76,11 @@
 
 **5.** Використати коментарі для автоматичної генерації документації засобами javadoc.
 
-📎 [Посилання на проєкт](https://github.com/rronik3/Practice_OOP/tree/main/src/ex3)
+📎 [Посилання на проєкт](https://github.com/rronik3/Practice_OOP/tree/main/src/ex4)
 
 **Результат**
 
-![](https://github.com/rronik3/Practice_OOP/blob/main/img/main_ex3.png)
+![](https://github.com/rronik3/Practice_OOP/blob/main/img/Main_ex4.png)
 
 ### 📌 Завдання 5 (28.03.25)
 
