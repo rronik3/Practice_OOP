@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * </p>
  * 
  * @author xone
- * @version 1.0
+ * @version 1.1
  */
 public class ViewResult implements View {
     /** Ім'я файлу для серіалізації */
@@ -19,7 +19,7 @@ public class ViewResult implements View {
     /** Кількість початкових елементів */
     private static final int DEFAULT_NUM = 10;
     /** Колекція результатів рівнянь */
-    private ArrayList<EquationData> results = new ArrayList<>();
+    protected ArrayList<EquationData> results = new ArrayList<>();
 
     /**
      * Конструктор за замовчуванням.
@@ -63,8 +63,8 @@ public class ViewResult implements View {
      * @param x Значення X.
      * @return Обчислене значення Y.
      */
-    private double calculate(double x) {
-        return Math.sin(x * Math.PI / 180); // Заміни на свою логіку
+    public double calculate(double x) {
+        return x * x + 5 * x + 3; // Формула для обчислення y
     }
 
     /**
@@ -74,10 +74,13 @@ public class ViewResult implements View {
      */
     public void init(double stepX) {
         double x = 0.0;
-        for (EquationData data : results) {
+        results.clear(); // Очищення списку перед заповненням
+        for (int i = 0; i < 10; i++) { // Наприклад, 10 значень
+            EquationData data = new EquationData();
             data.setX(x);
-            data.setY(calculate(x));
-            x += stepX;
+            data.setY(calculate(x)); // Використання методу calculate для обчислення y
+            results.add(data);
+            x += stepX; // Збільшення x на крок
         }
     }
 
@@ -153,5 +156,39 @@ public class ViewResult implements View {
         viewHeader();
         viewBody();
         viewFooter();
+    }
+
+    /**
+     * Відображає таблицю результатів для рівняння.
+     *
+     * @param a Початкове значення X.
+     * @param b Кінцеве значення X.
+     * @param c Кількість кроків.
+     */
+    public void showTable(double a, double b, double c) {
+        System.out.println("Результати для рівняння:");
+
+        // Ініціалізація таблиці з кроком stepX
+        double stepX = (b - a) / c; // Розрахунок кроку
+        init(stepX); // Заповнення списку results
+
+        // Відображення таблиці
+        viewHeader();
+        viewBody();
+        viewFooter();
+    }
+
+    /**
+     * Точка входу в програму.
+     * <p>
+     * Створює об'єкт {@link ViewResult} та викликає метод {@link #showTable(double, double, double)}
+     * для демонстрації роботи класу.
+     * </p>
+     *
+     * @param args Аргументи командного рядка (не використовуються).
+     */
+    public static void main(String[] args) {
+        ViewResult viewResult = new ViewResult();
+        viewResult.showTable(0, 10, 10); // Від 0 до 10 з 10 кроками
     }
 }
