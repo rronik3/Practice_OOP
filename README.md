@@ -98,13 +98,15 @@
 
 **5.** Розробити клас для тестування функціональності програми.
 
+📎 [Посилання на проєкт](https://github.com/rronik3/Practice_OOP/tree/main/src/ex5)
+
 **Результат Main**
 
-![]( )
+![](https://github.com/rronik3/Practice_OOP/blob/main/img/Main_ex5.png)
 
 **Результат MainTest**
 
-![]( )
+![](https://github.com/rronik3/Practice_OOP/blob/main/img/MainTest_ex5.png)
 
 ### 📌 Завдання 6 (29.03.25)
 
