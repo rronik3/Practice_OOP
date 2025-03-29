@@ -4,17 +4,22 @@ import java.io.InputStreamReader;
 import ex2.EquationSolver;
 import ex3.View;
 import ex4.ViewableTable;
+import ex5.CommandManager;
+import ex5.GenerateCommand;
+import ex5.SaveCommand;
+import ex5.RestoreCommand;
+import ex5.SolveEquationCommand;
 
 /**
- * Клас Main для запуску програми та управління користувацьким введенням.
+ * Головний клас програми для управління користувацьким введенням і виконанням команд.
  * <p>
- * Цей клас забезпечує текстове меню для взаємодії з користувачем,
- * дозволяючи виконувати різні операції, такі як перегляд результату,
- * генерація випадкових значень, збереження та відновлення даних.
+ * Цей клас забезпечує текстове меню для взаємодії з користувачем, дозволяючи виконувати
+ * різні операції, такі як перегляд результатів, генерація випадкових значень, збереження
+ * та відновлення даних, а також розв'язання квадратних рівнянь.
  * </p>
  * 
  * @author xone
- * @version 1.1
+ * @version 1.3
  */
 public class Main {
     private View view; // Об'єкт для відображення результатів
@@ -45,20 +50,31 @@ public class Main {
      * Користувач може виконувати наступні команди:
      * <ul>
      *     <li>'q' - Вихід із програми</li>
-     *     <li>'v' - Перегляд результату</li>
+     *     <li>'v' - Перегляд результатів</li>
      *     <li>'g' - Генерація випадкових значень</li>
-     *     <li>'s' - Збереження результату</li>
-     *     <li>'r' - Відновлення результату</li>
+     *     <li>'s' - Збереження результатів</li>
+     *     <li>'r' - Відновлення результатів</li>
+     *     <li>'u' - Скасування останньої операції</li>
+     *     <li>'e' - Розв'язання квадратного рівняння</li>
      * </ul>
+     * </p>
+     * <p>
+     * Кожна команда обробляється через відповідний клас команди, використовуючи
+     * шаблон Command. Скасування операцій реалізовано через {@link CommandManager}.
      * </p>
      */
     private void menu() {
+        CommandManager commandManager = CommandManager.getInstance();
         String s = null;
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         do {
-            System.out.println("Enter command: 'q'uit, 'v'iew, 'g'enerate, 's'ave, 'r'estore");
+            System.out.println("Enter command: 'q'uit, 'v'iew, 'g'enerate, 's'ave, 'r'estore, 'u'ndo, 'e'quation");
             try {
                 s = in.readLine();
+                if (s == null || s.trim().isEmpty()) {
+                    System.out.println("No command entered. Please try again.");
+                    continue;
+                }
             } catch (IOException e) {
                 System.out.println("Error: " + e);
                 System.exit(0);
@@ -66,32 +82,68 @@ public class Main {
 
             switch (s.charAt(0)) {
                 case 'q':
+                    // Завершення програми
                     System.out.println("Exit.");
                     break;
                 case 'v':
-                    view.viewShow(); // Викликаємо метод для відображення результатів
+                    // Відображення результатів
+                    view.viewShow();
                     break;
                 case 'g':
-                    double stepX = 1.0; // Встановіть крок для генерації
-                    view.init(stepX); // Заповнення списку results
-                    view.viewShow(); // Відображення результатів через view
-                    break;
-                case 's':
+                    // Генерація випадкових значень
+                    System.out.println("Enter stepX:");
                     try {
-                        calc.saveResult();
+                        String input = in.readLine();
+                        if (input == null || input.trim().isEmpty()) {
+                            System.out.println("No input provided. Please enter a valid number.");
+                            continue;
+                        }
+                        double stepX = Double.parseDouble(input);
+                        commandManager.executeCommand(new GenerateCommand(view, stepX));
                     } catch (IOException e) {
-                        System.out.println("Serialization error: " + e);
+                        System.out.println("Error reading input: " + e.getMessage());
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a valid number.");
                     }
                     break;
+                case 's':
+                    // Збереження результатів
+                    commandManager.executeCommand(new SaveCommand(view));
+                    break;
                 case 'r':
+                    // Відновлення результатів
+                    commandManager.executeCommand(new RestoreCommand(view));
+                    break;
+                case 'u':
+                    // Скасування останньої операції
+                    commandManager.undo();
+                    break;
+                case 'e':
+                    // Розв'язання квадратного рівняння
+                    System.out.println("Enter coefficients a, b, c:");
                     try {
-                        calc.restoreResult();
-                    } catch (Exception e) {
-                        System.out.println("Serialization error: " + e);
+                        String inputA = in.readLine();
+                        String inputB = in.readLine();
+                        String inputC = in.readLine();
+                        if (inputA == null || inputA.trim().isEmpty() ||
+                            inputB == null || inputB.trim().isEmpty() ||
+                            inputC == null || inputC.trim().isEmpty()) {
+                            System.out.println("No input provided. Please enter valid numbers.");
+                            continue;
+                        }
+                        double a = Double.parseDouble(inputA);
+                        double b = Double.parseDouble(inputB);
+                        double c = Double.parseDouble(inputC);
+                        commandManager.executeCommand(new SolveEquationCommand(calc, a, b, c));
+                    } catch (IOException e) {
+                        System.out.println("Error reading input: " + e.getMessage());
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter valid numbers.");
                     }
                     break;
                 default:
-                    System.out.print("Wrong command. ");
+                    // Невідома команда
+                    System.out.println("Invalid command.");
             }
         } while (s.charAt(0) != 'q');
     }

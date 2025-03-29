@@ -97,4 +97,30 @@ public class EquationSolver {
             result = (EquationData) is.readObject();
         }
     }
+     /**
+     * Розв'язує квадратне рівняння ax^2 + bx + c = 0.
+     *
+     * @param a Коефіцієнт при x^2.
+     * @param b Коефіцієнт при x.
+     * @param c Вільний член.
+     * @return Масив із коренями рівняння. Якщо коренів немає, повертається порожній масив.
+     */
+    public double[] solveQuadraticEquation(double a, double b, double c) {
+        if (a == 0) {
+            throw new IllegalArgumentException("Коефіцієнт 'a' не може бути нулем.");
+        }
+
+        double discriminant = b * b - 4 * a * c;
+
+        if (discriminant > 0) {
+            double x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+            double x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+            return new double[]{x1, x2};
+        } else if (discriminant == 0) {
+            double x = -b / (2 * a);
+            return new double[]{x};
+        } else {
+            return new double[]{}; // Немає дійсних коренів
+        }
+    }
 }
