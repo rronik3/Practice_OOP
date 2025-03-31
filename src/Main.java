@@ -1,6 +1,9 @@
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
+
 import ex2.EquationSolver;
 import ex3.View;
 import ex4.ViewableTable;
@@ -9,6 +12,10 @@ import ex5.GenerateCommand;
 import ex5.SaveCommand;
 import ex5.RestoreCommand;
 import ex5.SolveEquationCommand;
+import ex6.CommandQueue;
+import ex6.MinMaxCommand;
+import ex3.ViewResult;
+import ex6.ExecuteConsoleCommand;
 
 /**
  * Головний клас програми для управління користувацьким введенням і виконанням команд.
@@ -24,6 +31,7 @@ import ex5.SolveEquationCommand;
 public class Main {
     private View view; // Об'єкт для відображення результатів
     private EquationSolver calc = new EquationSolver(); // Об'єкт для обчислення рівнянь
+    private ViewResult viewResult = new ViewResult(); // Об'єкт для відображення результатів
 
     /**
      * Конструктор, який приймає об'єкт {@link View} для відображення результатів.
@@ -56,6 +64,7 @@ public class Main {
      *     <li>'r' - Відновлення результатів</li>
      *     <li>'u' - Скасування останньої операції</li>
      *     <li>'e' - Розв'язання квадратного рівняння</li>
+     *     <li>'i' - Введення чисел користувачем</li>
      * </ul>
      * </p>
      * <p>
@@ -68,7 +77,7 @@ public class Main {
         String s = null;
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         do {
-            System.out.println("Enter command: 'q'uit, 'v'iew, 'g'enerate, 's'ave, 'r'estore, 'u'ndo, 'e'quation");
+            System.out.println("Enter command: 'q'uit, 'v'iew, 'g'enerate, 's'ave, 'r'estore, 'u'ndo, 'e'quation, 'i'nput numbers");
             try {
                 s = in.readLine();
                 if (s == null || s.trim().isEmpty()) {
@@ -119,6 +128,11 @@ public class Main {
                     commandManager.undo();
                     break;
                 case 'e':
+                    // Ініціалізація даних і виконання команди
+                    viewResult.init(1.0); // Ініціалізуємо дані
+                    new ExecuteConsoleCommand(viewResult).execute();
+                    break;
+                case 'i':
                     // Розв'язання квадратного рівняння
                     System.out.println("Enter coefficients a, b, c:");
                     try {
@@ -141,9 +155,6 @@ public class Main {
                         System.out.println("Invalid input. Please enter valid numbers.");
                     }
                     break;
-                default:
-                    // Невідома команда
-                    System.out.println("Invalid command.");
             }
         } while (s.charAt(0) != 'q');
     }
@@ -157,7 +168,37 @@ public class Main {
      * @param args Аргументи командного рядка (не використовуються).
      */
     public static void main(String[] args) {
-        Main main = new Main(new ViewableTable().getView()); // Використовуємо ViewableTable для створення View
+        // Демонстрація паралельної обробки елементів колекції
+        List<Integer> numbers = Arrays.asList(10, 20, 30, 40, 50, 60, 70, 80, 90, 100);
+
+        if (numbers == null || numbers.isEmpty()) {
+            System.out.println("The collection is empty. No tasks will be executed.");
+            return;
+        }
+
+        ViewResult viewResult = new ViewResult();
+        CommandQueue queue = new CommandQueue();
+
+        // Додавання задач у чергу
+        queue.addTask(new MinMaxCommand(numbers, viewResult));
+
+        // Очікування завершення всіх задач
+        while (!queue.isEmpty()) {
+            try {
+                Thread.sleep(100); // Перевіряємо чергу кожні 100 мс
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        // Завершення роботи
+        queue.shutdown();
+
+        // Відображення результатів
+        viewResult.displayResults();
+
+        // Запуск текстового меню
+        Main main = new Main(new ViewableTable().getView());
         main.menu();
     }
 }

@@ -3,6 +3,7 @@ package ex3;
 import ex2.EquationData;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Клас ViewResult реалізує інтерфейс {@link View}.
@@ -11,7 +12,7 @@ import java.util.ArrayList;
  * </p>
  * 
  * @author xone
- * @version 1.1
+ * @version 1.2
  */
 public class ViewResult implements View {
     /** Ім'я файлу для серіалізації */
@@ -20,6 +21,53 @@ public class ViewResult implements View {
     private static final int DEFAULT_NUM = 10;
     /** Колекція результатів рівнянь */
     protected ArrayList<EquationData> results = new ArrayList<>();
+    /** Колекція додаткових результатів (наприклад, мінімум і максимум) */
+    private final List<Result> additionalResults = new ArrayList<>();
+
+    /**
+     * Додає додатковий результат до списку.
+     *
+     * @param description Опис результату (наприклад, "Min value").
+     * @param value Значення результату.
+     */
+    public void addAdditionalResult(String description, int value) {
+        additionalResults.add(new Result(description, value));
+    }
+
+    /**
+     * Відображає всі додаткові результати.
+     */
+    public void displayResults() {
+        if (additionalResults.isEmpty()) {
+            System.out.println("No additional results to display.");
+            return;
+        }
+        System.out.println("Additional Results:");
+        for (Result result : additionalResults) {
+            System.out.println(result.getDescription() + ": " + result.getValue());
+        }
+    }
+
+    /**
+     * Внутрішній клас для зберігання одного додаткового результату.
+     */
+    private static class Result {
+        private final String description;
+        private final int value;
+
+        public Result(String description, int value) {
+            this.description = description;
+            this.value = value;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
 
     /**
      * Конструктор за замовчуванням.
@@ -52,6 +100,19 @@ public class ViewResult implements View {
      */
     public ArrayList<EquationData> getResults() {
         return results;
+    }
+
+    /**
+     * Повертає список цілих чисел, отриманих з результатів рівнянь.
+     *
+     * @return Список цілих чисел.
+     */
+    public List<Integer> getIntegerResults() {
+        List<Integer> integerResults = new ArrayList<>();
+        for (EquationData data : results) {
+            integerResults.add((int) data.getY()); // Припускаємо, що Y — це значення, яке потрібно
+        }
+        return integerResults;
     }
 
     /**
@@ -189,6 +250,7 @@ public class ViewResult implements View {
      */
     public static void main(String[] args) {
         ViewResult viewResult = new ViewResult();
+        viewResult.init(1.0); // Ініціалізуємо поле results із кроком 1.0
         viewResult.showTable(0, 10, 10); // Від 0 до 10 з 10 кроками
     }
 }
