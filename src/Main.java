@@ -88,7 +88,6 @@ public class Main {
                 System.out.println("Error: " + e);
                 System.exit(0);
             }
-
             switch (s.charAt(0)) {
                 case 'q':
                     // Завершення програми
