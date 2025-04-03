@@ -120,6 +120,4 @@
 
 ![](https://github.com/rronik3/Practice_OOP/blob/main/img/Main_ex6.png)
 
-**Результат MainTest**
 
-![](https://github.com/rronik3/Practice_OOP/blob/main/img/MainTest_ex6.png)
