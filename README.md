@@ -126,7 +126,7 @@
 
 📎 [Посилання на проєкт](https://github.com/rronik3/Practice_OOP/tree/main/src/ex7)
 
-**Результат Main**
+**Результат MainGUI**
 
 ![](https://github.com/rronik3/Practice_OOP/blob/main/img/Результати_%20інтерфейс.png)
 
