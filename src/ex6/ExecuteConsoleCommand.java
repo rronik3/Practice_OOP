@@ -3,6 +3,9 @@ package ex6;
 import ex3.ViewResult;
 import ex5.Command;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+
+import javax.swing.JTextArea;
 
 /**
  * Клас ExecuteConsoleCommand реалізує команду для виконання всіх потоків.
@@ -16,47 +19,43 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0
  */
 public class ExecuteConsoleCommand implements Command {
-    /** Об'єкт, який реалізує інтерфейс {@linkplain ViewResult}. */
-    private ViewResult view;
+    private ViewResult viewResult; // Використовуємо ViewResult для обчислень
+    private Consumer<String> output; // Для виводу повідомлень
+    private JTextArea messageArea; // Для відображення результатів у графічному інтерфейсі
 
-    /**
-     * Конструктор, який ініціалізує поле {@linkplain ExecuteConsoleCommand#view}.
-     *
-     * @param view Об'єкт {@linkplain ViewResult}, який містить дані для обробки.
-     */
-    public ExecuteConsoleCommand(ViewResult view) {
-        this.view = view;
+    public ExecuteConsoleCommand(ViewResult viewResult) {
+        this(viewResult, System.out::println); // За замовчуванням — вивід у консоль
     }
 
-    /**
-     * Виконує команду для запуску всіх потоків.
-     * <p>
-     * Створює дві черги завдань {@link CommandQueue} і додає до них завдання:
-     * <ul>
-     *     <li>{@link MinMaxCommand} для обчислення мінімального та максимального значень.</li>
-     *     <li>{@link MaxCommand} для обчислення максимального значення.</li>
-     *     <li>{@link AvgCommand} для обчислення середнього значення.</li>
-     * </ul>
-     * Потоки виконуються паралельно, і метод чекає завершення всіх завдань.
-     * </p>
-     * 
-     * @throws InterruptedException Якщо потік було перервано під час очікування завершення завдань.
-     */
+    public ExecuteConsoleCommand(ViewResult viewResult, Consumer<String> output) {
+        if (viewResult == null) {
+            throw new IllegalArgumentException("viewResult cannot be null");
+        }
+        this.viewResult = viewResult;
+        this.output = output;
+    }
+
+    public void setMessageArea(JTextArea messageArea) {
+        this.messageArea = messageArea;
+    }
+
     @Override
     public void execute() {
-        if (view.getIntegerResults().isEmpty()) {
-            System.out.println("No data available for processing.");
+        if (viewResult.getIntegerResults().isEmpty()) {
+            output.accept("No data available for processing.");
             return;
         }
 
+        // Ініціалізація черг
         CommandQueue queue1 = new CommandQueue();
         CommandQueue queue2 = new CommandQueue();
 
-        MaxCommand maxCommand = new MaxCommand(view.getIntegerResults());
-        AvgCommand avgCommand = new AvgCommand(view.getIntegerResults());
-        MinMaxCommand minMaxCommand = new MinMaxCommand(view.getIntegerResults(), view);
+        // Ініціалізація команд
+        MaxCommand maxCommand = new MaxCommand(viewResult.getIntegerResults(), messageArea);
+        AvgCommand avgCommand = new AvgCommand(viewResult.getIntegerResults(), messageArea);
+        MinMaxCommand minMaxCommand = new MinMaxCommand(viewResult.getIntegerResults(), messageArea, viewResult);
 
-        System.out.println("Execute all threads...");
+        output.accept("Execute all threads...");
 
         // Додавання завдань у черги
         queue1.addTask(minMaxCommand);
@@ -71,22 +70,23 @@ public class ExecuteConsoleCommand implements Command {
             queue1.shutdown();
             queue2.shutdown();
             TimeUnit.SECONDS.sleep(1);
+
+            // Виведення повідомлення про завершення
+            if (messageArea != null) {
+                messageArea.append("All tasks completed.\n");
+            } else {
+                output.accept("All tasks completed.");
+            }
         } catch (InterruptedException e) {
-            System.err.println(e);
+            output.accept("Interrupted: " + e.getMessage());
             Thread.currentThread().interrupt();
         }
 
-        System.out.println("All done.");
+        output.accept("All done.");
     }
 
-    /**
-     * Скасовує виконання команди.
-     * <p>
-     * Виводить повідомлення про те, що скасування не підтримується для цієї команди.
-     * </p>
-     */
     @Override
     public void undo() {
-        System.out.println("Undo operation is not supported for ExecuteConsoleCommand.");
+        output.accept("Undo operation is not supported for ExecuteConsoleCommand.");
     }
 }

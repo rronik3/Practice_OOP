@@ -105,7 +105,7 @@ public class EquationSolver {
      * @param c Вільний член.
      * @return Масив із коренями рівняння. Якщо коренів немає, повертається порожній масив.
      */
-    public double[] solveQuadraticEquation(double a, double b, double c) {
+    /*public double[] solveQuadraticEquation(double a, double b, double c) {
         if (a == 0) {
             throw new IllegalArgumentException("Коефіцієнт 'a' не може бути нулем.");
         }
@@ -122,5 +122,21 @@ public class EquationSolver {
         } else {
             return new double[]{}; // Немає дійсних коренів
         }
-    }
+    }*/
+    
+        public double[] solveQuadraticEquation(double a, double b, double c) {
+            double discriminant = b * b - 4 * a * c;
+            if (discriminant < 0) {
+                return new double[0]; // Немає дійсних коренів
+            } else if (discriminant == 0) {
+                return new double[]{-b / (2 * a)}; // Один корінь
+            } else {
+                double sqrtD = Math.sqrt(discriminant);
+                return new double[]{
+                    (-b + sqrtD) / (2 * a),
+                    (-b - sqrtD) / (2 * a)
+                }; // Два корені
+            }
+        }
+    
 }

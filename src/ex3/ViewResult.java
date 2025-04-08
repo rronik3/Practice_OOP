@@ -115,6 +115,37 @@ public class ViewResult implements View {
         return integerResults;
     }
 
+    public double[] getResultsAsArray() {
+        // Створюємо масив для збереження результатів
+        double[] resultsArray = new double[results.size()];
+    
+        // Заповнюємо масив значеннями Y із результатів
+        for (int i = 0; i < results.size(); i++) {
+            resultsArray[i] = results.get(i).getY(); // Припускаємо, що Y — це значення, яке потрібно
+        }
+    
+        return resultsArray;
+    }
+
+    /**
+ * Додає нові результати до списку results.
+ */
+public void addResult(double a, double b, double c, double... roots) {
+    for (double root : roots) {
+        EquationData data = new EquationData();
+        data.setX(a); // Можливо, X — це коефіцієнт a
+        data.setY(root); // Y — це корінь рівняння
+        results.add(data);
+    }
+}
+
+/**
+ * Очищує список результатів.
+ */
+public void clearResults() {
+    results.clear();
+}
+
     /**
      * Метод для обчислення значення рівняння.
      * <p>

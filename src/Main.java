@@ -4,6 +4,8 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.JTextArea;
+
 import ex2.EquationSolver;
 import ex3.View;
 import ex4.ViewableTable;
@@ -29,9 +31,10 @@ import ex6.ExecuteConsoleCommand;
  * @version 1.3
  */
 public class Main {
-    private View view; // Об'єкт для відображення результатів
+    private View view = new ViewResult(); // Ініціалізація об'єкта View
     private EquationSolver calc = new EquationSolver(); // Об'єкт для обчислення рівнянь
     private ViewResult viewResult = new ViewResult(); // Об'єкт для відображення результатів
+    
 
     /**
      * Конструктор, який приймає об'єкт {@link View} для відображення результатів.
@@ -73,6 +76,7 @@ public class Main {
      * </p>
      */
     private void menu() {
+        
         CommandManager commandManager = CommandManager.getInstance();
         String s = null;
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -147,7 +151,13 @@ public class Main {
                         double a = Double.parseDouble(inputA);
                         double b = Double.parseDouble(inputB);
                         double c = Double.parseDouble(inputC);
-                        commandManager.executeCommand(new SolveEquationCommand(calc, a, b, c));
+
+                        // Виконання команди
+                        SolveEquationCommand command = new SolveEquationCommand(calc, viewResult, a, b, c);
+                        commandManager.executeCommand(command);
+
+                        // Відображення результатів
+                        viewResult.displayResults();
                     } catch (IOException e) {
                         System.out.println("Error reading input: " + e.getMessage());
                     } catch (NumberFormatException e) {
@@ -167,6 +177,7 @@ public class Main {
      * @param args Аргументи командного рядка (не використовуються).
      */
     public static void main(String[] args) {
+        
         // Демонстрація паралельної обробки елементів колекції
         List<Integer> numbers = Arrays.asList(10, 20, 30, 40, 50, 60, 70, 80, 90, 100);
 
@@ -175,11 +186,14 @@ public class Main {
             return;
         }
 
+        JTextArea messageArea = new JTextArea();
+
         ViewResult viewResult = new ViewResult();
         CommandQueue queue = new CommandQueue();
 
         // Додавання задач у чергу
-        queue.addTask(new MinMaxCommand(numbers, viewResult));
+        queue.addTask(new MinMaxCommand(numbers, messageArea, viewResult));
+
 
         // Очікування завершення всіх задач
         while (!queue.isEmpty()) {

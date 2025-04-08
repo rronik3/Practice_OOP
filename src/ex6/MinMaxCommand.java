@@ -1,15 +1,18 @@
 package ex6;
 
 import java.util.List;
-import ex5.Command;
+
+import javax.swing.JTextArea;
+
 import ex3.ViewResult;
+import ex5.Command;
 
 /**
  * Клас MinMaxCommand реалізує команду для обчислення мінімального та максимального значень.
  * <p>
  * Цей клас використовує шаблон Command і може бути доданий до черги завдань
  * для паралельного виконання. Команда обчислює мінімальне та максимальне значення
- * в списку чисел і зберігає результати у {@link ViewResult}.
+ * в списку чисел і виводить результати у текстову область.
  * </p>
  * 
  * @author xone
@@ -17,20 +20,13 @@ import ex3.ViewResult;
  */
 public class MinMaxCommand implements Command {
     /** Список чисел для обчислення мінімального та максимального значень. */
-    private final List<Integer> numbers;
+    private List<Integer> data;
 
-    /** Об'єкт для збереження результатів обчислень. */
-    private final ViewResult viewResult;
+    private JTextArea messageArea;
 
-    /**
-     * Конструктор класу MinMaxCommand.
-     *
-     * @param numbers Список чисел для обчислення.
-     * @param viewResult Об'єкт {@linkplain ViewResult} для збереження результатів.
-     */
-    public MinMaxCommand(List<Integer> numbers, ViewResult viewResult) {
-        this.numbers = numbers;
-        this.viewResult = viewResult;
+    public MinMaxCommand(List<Integer> data, JTextArea messageArea, ViewResult viewResult) {
+        this.data = data;
+        this.messageArea = messageArea;
     }
 
     /**
@@ -41,7 +37,7 @@ public class MinMaxCommand implements Command {
      */
     @Override
     public void undo() {
-        System.out.println("Undo operation is not supported.");
+        messageArea.append("Undo operation is not supported for MinMaxCommand.\n");
     }
 
     /**
@@ -49,28 +45,19 @@ public class MinMaxCommand implements Command {
      * <p>
      * Якщо список чисел порожній або дорівнює {@code null}, виводиться відповідне повідомлення.
      * В іншому випадку обчислюються мінімальне та максимальне значення в списку,
-     * і результати зберігаються у {@link ViewResult}.
+     * і результати виводяться у текстову область.
      * </p>
      */
     @Override
     public void execute() {
-        if (numbers == null || numbers.isEmpty()) {
-            System.out.println("The collection is empty. Cannot find min and max values.");
-            return;
-        }
-        if (viewResult == null) {
-            System.out.println("ViewResult is not initialized. Cannot store results.");
+        if (data == null || data.isEmpty()) {
+            messageArea.append("The collection is empty. Cannot find min and max values.\n");
             return;
         }
 
-        // Обчислення мінімального та максимального значень
-        int min = numbers.stream().min(Integer::compareTo).orElseThrow();
-        int max = numbers.stream().max(Integer::compareTo).orElseThrow();
+        int min = data.stream().min(Integer::compare).orElse(Integer.MAX_VALUE);
+        int max = data.stream().max(Integer::compare).orElse(Integer.MIN_VALUE);
 
-        // Збереження результатів у ViewResult
-        viewResult.addAdditionalResult("Min value", min);
-        viewResult.addAdditionalResult("Max value", max);
-
-        System.out.println("Min and Max values have been calculated and stored.");
+        messageArea.append("Min value: " + min + ", Max value: " + max + "\n");
     }
 }

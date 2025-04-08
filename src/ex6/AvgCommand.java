@@ -1,6 +1,9 @@
 package ex6;
 
 import java.util.List;
+
+import javax.swing.JTextArea;
+
 import ex5.Command;
 
 /**
@@ -18,13 +21,11 @@ public class AvgCommand implements Command {
     /** Список чисел для обчислення середнього значення. */
     private final List<Integer> numbers;
 
-    /**
-     * Конструктор класу AvgCommand.
-     *
-     * @param numbers Список чисел для обчислення середнього значення.
-     */
-    public AvgCommand(List<Integer> numbers) {
-        this.numbers = numbers;
+    private JTextArea messageArea;
+
+    public AvgCommand(List<Integer> list, JTextArea messageArea) {
+        this.numbers = list;
+        this.messageArea = messageArea;
     }
 
     /**
@@ -48,10 +49,21 @@ public class AvgCommand implements Command {
     @Override
     public void execute() {
         if (numbers == null || numbers.isEmpty()) {
-            System.out.println("The collection is empty. Cannot calculate the average.");
+            String msg = "The collection is empty. Cannot calculate the average.\n";
+            if (messageArea != null) {
+                messageArea.append(msg);
+            } else {
+                System.out.println(msg);
+            }
             return;
         }
+    
         double avg = numbers.stream().mapToInt(Integer::intValue).average().orElseThrow();
-        System.out.println("Average value: " + avg);
+        String msg = "Average value: " + avg + "\n";
+        if (messageArea != null) {
+            messageArea.append(msg);
+        } else {
+            System.out.println(msg);
+        }
     }
 }

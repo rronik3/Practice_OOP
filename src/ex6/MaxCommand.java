@@ -1,6 +1,9 @@
 package ex6;
 
 import java.util.List;
+
+import javax.swing.JTextArea;
+
 import ex5.Command;
 
 /**
@@ -18,14 +21,13 @@ public class MaxCommand implements Command {
     /** Список чисел для обчислення максимального значення. */
     private final List<Integer> numbers;
 
-    /**
-     * Конструктор класу MaxCommand.
-     *
-     * @param numbers Список чисел для обчислення максимального значення.
-     */
-    public MaxCommand(List<Integer> numbers) {
-        this.numbers = numbers;
+    private JTextArea messageArea;
+
+    public MaxCommand(List<Integer> list, JTextArea messageArea) {
+        this.numbers = list;
+        this.messageArea = messageArea;
     }
+
 
     /**
      * Скасовує виконання команди.
@@ -48,10 +50,18 @@ public class MaxCommand implements Command {
     @Override
     public void execute() {
         if (numbers == null || numbers.isEmpty()) {
-            System.out.println("The collection is empty. Cannot find the maximum value.");
+            if (messageArea != null) {
+                messageArea.append("The collection is empty. Cannot find the maximum value.\n");
+            } else {
+                System.out.println("The collection is empty. Cannot find the maximum value.");
+            }
             return;
         }
         int max = numbers.stream().max(Integer::compareTo).orElseThrow();
-        System.out.println("Max value: " + max);
+        if (messageArea != null) {
+            messageArea.append("Max value: " + max + "\n");
+        } else {
+            System.out.println("Max value: " + max);
+        }
     }
 }
